@@ -1,0 +1,1 @@
+ssh -i "Downloads/blog-server-security-pair.pem" ubuntu@ec2-54-179-171-232.ap-southeast-1.compute.amazona
