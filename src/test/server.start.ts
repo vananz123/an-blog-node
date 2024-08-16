@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from 'express'
 import { asyncHandler } from '../helpers/asyncHandler'
 import { Ok } from '../core/success.response'
 
-router.post('/status',asyncHandler((req:Request,res:Response,next:NextFunction)=>{
+router.get('/status',asyncHandler((req:Request,res:Response,next:NextFunction)=>{
     return Ok.create({
         message:"Server start succses",
         metadata:{
