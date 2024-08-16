@@ -1,6 +1,8 @@
 import {ConfigAppType} from './type'
 import dotenv from 'dotenv'
 dotenv.config()
+
+//mongodb+srv://vananz:mn112233@cluster0.blog.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
 const dev: ConfigAppType = {
   app: {
     port: process.env.DEV_APP_PORT || 3055,

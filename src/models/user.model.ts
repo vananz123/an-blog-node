@@ -1,52 +1,26 @@
-import { Schema,model } from "mongoose";
-const DOCUMENT_NAME = "User";
-const COLLECTION_NAME = "Users";
+import { Schema, model } from 'mongoose';
+const DOCUMENT_NAME = 'User';
+const COLLECTION_NAME = 'Users';
+
 const userSchema = new Schema(
   {
-    name: {
-      type: String,
-      trim: true,
-      required: true,
-      unique: true,
-      index: true,
-    },
-    email: {
-      type: String,
-      trim: true,
-      required: true,
-      unique: true,
-    },
-    mobile: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    img: {
-      type: String,
-      default: "",
-    },
-    status: {
-      type: String,
-      enum: ["active", "inactive"],
-      default: "inactive",
-    },
-    verfify: {
-      type: Schema.Types.Boolean,
-      default: false,
-    },
-    roles: {
-      type: Array,
-      default: [],
-    },
+    usr_id: { type: Number, require: true },
+    usr_slug: { type: String, require: true },
+    usr_name: { type: String, default: '' },
+    usr_password: { type: String, default: '' },
+    usr_salf: { type: String, default: '' },
+    usr_email: { type: String, default: '' },
+    usr_phone: { type: String, default: '' },
+    usr_sex: { type: String, default: '' },
+    usr_avatar: { type: String, default: '' },
+    usr_date_of_birth: { type: Date, default: null },
+    usr_role: { type: Schema.Types.ObjectId, ref: 'Role' },
+    usr_status: { type: String, default: 'pending', enum: ['pending', 'active', 'block'] },
   },
   {
     timeStamp: true,
     collection: COLLECTION_NAME,
-  }
+  },
 );
 
 //Export the model
