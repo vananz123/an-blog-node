@@ -2,9 +2,11 @@ import HttpCode from './http.statusCode';
 
 class ErrorResponse extends Error {
   public status: number;
-  constructor(message: string, status: number) {
+  public detail: object | undefined;
+  constructor(message: string, status: number, detail?: object) {
     super(message);
     this.status = status;
+    this.detail = detail;
   }
 }
 class ConflictRequestError extends ErrorResponse {
@@ -13,8 +15,8 @@ class ConflictRequestError extends ErrorResponse {
   }
 }
 class BadRequestError extends ErrorResponse {
-  constructor(message = HttpCode.REASON_PHRASES.BAD_REQUEST, status = HttpCode.STATUS_CODES.BAD_REQUEST) {
-    super(message, status);
+  constructor(message = HttpCode.REASON_PHRASES.BAD_REQUEST, status = HttpCode.STATUS_CODES.BAD_REQUEST ,detail?: object ) {
+    super(message, status ,detail);
   }
 }
 class AuthFailureError extends ErrorResponse {
@@ -32,11 +34,4 @@ class ForbiddenError extends ErrorResponse {
     super(message, status);
   }
 }
-export {
-    ErrorResponse,
-  ConflictRequestError,
-  ForbiddenError,
-  BadRequestError,
-  NotFoundError,
-  AuthFailureError
-};
+export { ErrorResponse, ConflictRequestError, ForbiddenError, BadRequestError, NotFoundError, AuthFailureError };

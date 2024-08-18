@@ -9,6 +9,8 @@ const userSchema = new Schema(
     usr_name: { type: String, default: '' },
     usr_password: { type: String, default: '' },
     usr_salf: { type: String, default: '' },
+    usr_follower:[{ type: Schema.Types.ObjectId, ref: DOCUMENT_NAME}],
+    usr_following:[{ type: Schema.Types.ObjectId, ref: DOCUMENT_NAME }],
     usr_email: { type: String, default: '' },
     usr_phone: { type: String, default: '' },
     usr_sex: { type: String, default: '' },

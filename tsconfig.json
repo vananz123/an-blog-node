@@ -104,9 +104,9 @@
     /* Completeness */
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true   ,
-    "baseUrl": "./" /* Specify the base directory to resolve non-relative module names. */,
+    "baseUrl": "." /* Specify the base directory to resolve non-relative module names. */,
         "paths": {
-            "@/*": ["./src/*"]
+            "@/*": ["src/*"]
         } /* Specify a set of entries that re-map imports to additional lookup locations. */,
 
         "plugins": [
@@ -121,5 +121,9 @@
             }
         ],                      /* Skip type checking all .d.ts files. */
   },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
+  "files": ["src/type.d.ts"],
   "include": ["src/**/*"]
 }

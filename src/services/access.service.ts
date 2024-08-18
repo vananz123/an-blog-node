@@ -78,7 +78,7 @@ class AccessService {
         refreshToken: tokens.refreshToken,
       });
       return {
-        user: getIntoData({ fileds: ['_id', 'name', 'email'], object: user }),
+        user: getIntoData({ fileds: ['_id', 'usr_name', 'usr_email'], object: user }),
         tokens,
       };
     } else {

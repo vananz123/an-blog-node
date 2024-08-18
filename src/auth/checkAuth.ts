@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { HEADER } from '../constants';
 import { findById } from '../services/apikey.service';
-import { ApiKeyRequest } from '../core/type.request';
-export const apiKey = async (req: ApiKeyRequest, res: Response, next: NextFunction) => {
+import { MiddlewaresRequest } from '../core/type.request';
+export const apiKey = async (req: MiddlewaresRequest, res: Response, next: NextFunction) => {
   try {
     // const newApi = await apiKeyModel.create({key:crypto.randomBytes(32).toString('hex'),status:true, permissions:['0000']})
     // console.log(newApi)
@@ -27,7 +27,7 @@ export const apiKey = async (req: ApiKeyRequest, res: Response, next: NextFuncti
   }
 };
 export const permissions = ({ permissions }: { permissions: string }) => {
-  return (req: ApiKeyRequest, res: Response, next: NextFunction) => {
+  return (req: MiddlewaresRequest, res: Response, next: NextFunction) => {
     if (!req.objKey?.permissions) {
       return res.status(403).json({
         mess: 'permissions dinier',
