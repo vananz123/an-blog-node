@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { Types } from 'mongoose';
+import crypto from 'crypto'
 export const getIntoData = ({ fileds = [], object = {} }:{fileds:Array<string>;object:Object}) => {
   return _.pick(object, fileds);
 };
@@ -41,3 +42,4 @@ export const updateNestedObjectParser = (obj:any)=> {
   })
   return final
 }
+export const nameFileRamdom = ()=> crypto.randomBytes(16).toString('hex')

@@ -1,9 +1,24 @@
-import { userLoginSchema, userRegistrationSchema } from '@/schemas/user.schemas';
+import { userLoginSchema, userRegistrationSchema, userUpdateShema } from '@/schemas/user.schemas';
 import { UserDecode } from '../auth/jwtUtils';
 import { Request } from 'express';
 import { z } from 'zod';
-export type UserSignUpRequset = z.infer<typeof userRegistrationSchema>;
-export type UserLoginRequset = z.infer<typeof userLoginSchema>;
+import { commentCreateSchema } from '@/schemas/comment.schemas';
+import { questionCreateSchema } from '@/schemas/question.schema';
+
+
+
+export type UserSignUpRequest = z.infer<typeof userRegistrationSchema>;
+export type UserLoginRequest = z.infer<typeof userLoginSchema>;
+export type UserUpdateResquest = z.infer<typeof userUpdateShema>
+export type CommentCreateResquest = z.infer<typeof commentCreateSchema>
+export type QuestionCreateRequest = z.infer<typeof questionCreateSchema>
+
+
+export interface GetQuestionRequest {
+  search?: string;
+  limit?: number;
+  offset?: number;
+}
 export interface MiddlewaresRequest extends Request {
   objKey?: {
     permissions: Array<string>;
@@ -13,7 +28,11 @@ export interface MiddlewaresRequest extends Request {
   user?: UserDecode;
 }
 export type BlogRequest = { userId: string; title: string; body: string; thumb?: string };
-export interface GetCommentRequest {
+
+interface SwitchControllerQuery {
+  type: string;
+}
+export interface GetCommentRequest extends SwitchControllerQuery {
   blogId: string;
   parentId: string | null;
   limit?: number;
@@ -22,4 +41,8 @@ export interface GetCommentRequest {
 export interface DeleteCommentRequest {
   blogId: string;
   commentId: string;
+}
+export interface UpdateCommentRequest {
+  blogId: string;
+  content: string;
 }

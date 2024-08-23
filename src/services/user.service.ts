@@ -1,5 +1,6 @@
 class UserService{
-    static updateUser = async()=>{
+    static updateProfile= async()=>{
         
     }
 }
+export default new UserService;

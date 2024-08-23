@@ -9,6 +9,8 @@ const userSchema = new Schema(
     usr_name: { type: String, default: '' },
     usr_password: { type: String, default: '' },
     usr_salf: { type: String, default: '' },
+    usr_bookmark_blog:[{ type: Schema.Types.ObjectId, ref: 'Blog'}],
+    usr_bookmark_question:[{ type: Schema.Types.ObjectId, ref: 'Question'}],
     usr_follower:[{ type: Schema.Types.ObjectId, ref: DOCUMENT_NAME}],
     usr_following:[{ type: Schema.Types.ObjectId, ref: DOCUMENT_NAME }],
     usr_email: { type: String, default: '' },

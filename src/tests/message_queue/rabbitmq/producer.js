@@ -1,5 +1,5 @@
 const amqp =require('amqplib')
-const message = "Hello ,RabbitMQ for an blog"
+const message = "new blog title: new message rabbitmq"
 const runProducer = async()=>{
     try{
         const connection = await amqp.connect('amqp://localhost')

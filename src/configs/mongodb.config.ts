@@ -1,7 +1,6 @@
 import {ConfigAppType} from './type'
 import dotenv from 'dotenv'
 dotenv.config()
-
 //mongodb+srv://vananz:mn112233@cluster0.blog.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
 const dev: ConfigAppType = {
   app: {
@@ -25,4 +24,7 @@ const pro: ConfigAppType = {
 };
 const config = {dev,pro}
 const env= (process.env.NODE_ENV || 'dev') as keyof (typeof config)
-export default config[env]
+
+export const connectString = `mongodb://${config[env].db.host}:${config[env].db.port}/${config[env].db.name}`;
+export const connectStringDbCloud = `mongodb+srv://vananz:mn112233@cluster0.shsiivx.mongodb.net/blog?retryWrites=true&w=majority&appName=Cluster0`;
+export const configDb= config[env]
