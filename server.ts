@@ -1,7 +1,6 @@
 import server from './src/app'
 require('dotenv').config()
-import config from './src/configs/config.mongodb'
-const PORT = process.env.PORT || config.app.port 
+const PORT = process.env.PORT
 server.listen(PORT,()=>{
     console.log(`an-blog-node start ${PORT}`)
 }).on("error", (error:any) => {

@@ -8,7 +8,7 @@ import { UserDecode, verifyJWT } from '../auth/jwtUtils';
 import { getIntoData } from '../utils';
 import { AuthFailureError, BadRequestError, ConflictRequestError, ForbiddenError } from '../core/error.response';
 import { findByEmail } from '../models/reponsitory/user.repo';
-import { UserLoginRequset, UserSignUpRequset } from '../core/type.request';
+import { UserLoginRequest, UserSignUpRequest } from '../core/type.request';
 import { Types } from 'mongoose';
 import { newUser as createUser } from '../models/reponsitory/user.repo';
 class AccessService {
@@ -51,7 +51,7 @@ class AccessService {
     }
     return await keyTokenService.deleteKeyById(keyStoreId);
   };
-  static login = async (request: UserLoginRequset) => {
+  static login = async (request: UserLoginRequest) => {
     //find user
 
     const user = await findByEmail({ email: request.email });
@@ -78,7 +78,7 @@ class AccessService {
         refreshToken: tokens.refreshToken,
       });
       return {
-        user: getIntoData({ fileds: ['_id', 'name', 'email'], object: user }),
+        user: getIntoData({ fileds: ['_id', 'usr_name', 'usr_email'], object: user }),
         tokens,
       };
     } else {

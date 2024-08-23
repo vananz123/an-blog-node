@@ -1,32 +1,31 @@
 import { NextFunction, Request, Response } from 'express';
 import accessService from '../services/access.service';
 import { Created, Ok } from '../core/success.response';
-import { UserLoginRequset,UserSignUpRequset } from '../core/type.request';
-import { ApiKeyRequest } from '../core/type.request';
+import { MiddlewaresRequest, UserSignUpRequest, UserLoginRequest } from '../core/type.request';
 class AccessController {
-  refreshToken = async (req: ApiKeyRequest, res: Response, next: NextFunction) => {
+  refreshToken = async (req: MiddlewaresRequest, res: Response, next: NextFunction) => {
     return Ok.create({
-      message:'Logout success',
-      metadata: await accessService.refreshToken({keyStore:req.keyStore, user:req.user, refreshToken:req.refreshToken}),
-    }).send(res)
+      message: 'Refreshtoken success',
+      metadata: await accessService.refreshToken({ keyStore: req.keyStore, user: req.user, refreshToken: req.refreshToken }),
+    }).send(res);
   };
-  logout = async (req: ApiKeyRequest, res: Response, next: NextFunction) => {
+  logout = async (req: MiddlewaresRequest, res: Response, next: NextFunction) => {
     return Ok.create({
-      message:'Logout success',
+      message: 'Logout success',
       metadata: await accessService.logout(req.keyStore._id),
-    }).send(res)
+    }).send(res);
   };
-  login = async (req: Request<UserLoginRequset>, res: Response, next: NextFunction) => {
+  login = async (req: Request<UserLoginRequest>, res: Response, next: NextFunction) => {
     return Ok.create({
-      message:'',
+      message: 'new user success',
       metadata: await accessService.login(req.body),
-    }).send(res)
+    }).send(res);
   };
-  signUp = async (req: Request<UserSignUpRequset>, res: Response, next: NextFunction) => {
+  signUp = async (req: Request<UserSignUpRequest>, res: Response, next: NextFunction) => {
     return Created.create({
-      message:'Register success',
+      message: 'Register success',
       metadata: await accessService.sginUp(req.body),
-    }).send(res)
+    }).send(res);
   };
 }
 export default new AccessController();

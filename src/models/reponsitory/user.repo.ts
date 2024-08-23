@@ -1,3 +1,4 @@
+import { convertToObjectIdMongodb } from '../../utils';
 import { Roles } from '../../constants';
 import userModel from '../user.model';
 import { findRoleBySlug } from './role.repo';
@@ -19,6 +20,9 @@ interface ISelectUser {
   usr_email: number;
   usr_status: number;
 }
+export const findById = async (id: string) => {
+  return await userModel.findOne({ _id: convertToObjectIdMongodb(id) }).lean();
+};
 export const findByEmail = async ({
   email,
   select = { usr_name: 1, usr_email: 1, usr_password: 2, usr_status: 1 },
