@@ -6,12 +6,7 @@ import { findBlogById } from '../models/reponsitory/blog.repo';
 import { findCommentById } from '../models/reponsitory/comment.repo';
 
 class CommentService {
-  static createComment = async ({
-    blogId,
-    userId,
-    content,
-    parentId = null,
-  }: CommentCreateResquest) => {
+  static createComment = async ({ blogId, userId, content, parentId = null }: CommentCreateResquest) => {
     const comment = new commentModel({
       comment_blogId: blogId,
       comment_userId: userId,
@@ -19,9 +14,9 @@ class CommentService {
       comment_parentId: parentId,
     });
     let rightValue = 0;
-    if (parentId != null && parentId != "") {
+    if (parentId != null && parentId != '') {
       //replay comment
-      const parentComment = await findCommentById(parentId)
+      const parentComment = await findCommentById(parentId);
       if (!parentComment) throw new NotFoundError('not exist parentId comment');
       // update comment
       rightValue = parentComment.comment_right;
@@ -69,7 +64,9 @@ class CommentService {
           comment_left: { $gt: parentComment.comment_left },
           comment_right: { $lte: parentComment.comment_right },
         })
+        .populate({ path: 'comment_userId', select: 'usr_name usr_email _id usr_avatar' })
         .select({
+          comment_userId: 1,
           comment_left: 1,
           comment_right: 1,
           comment_content: 1,
@@ -85,6 +82,7 @@ class CommentService {
         comment_blogId: convertToObjectIdMongodb(blogId),
         comment_parentId: parentId,
       })
+      .populate({ path: 'comment_userId', select: 'usr_name usr_email _id usr_avatar' })
       .select({
         comment_left: 1,
         comment_right: 1,
@@ -130,13 +128,13 @@ class CommentService {
         $inc: { comment_left: -width },
       },
     );
-    return true
+    return true;
   };
-  static updateComment = async({blogId,content}:{blogId:string;content:string})=>{
-    const comment = await commentModel.findOne({_id:blogId});
+  static updateComment = async ({ commentId, content }: { commentId: string; content: string }) => {
+    const comment = await commentModel.findOne({ _id: commentId });
     if (!comment) throw new NotFoundError('not exist comment');
-    await comment.updateOne({comment_content:content})
-    return comment._id
-  }
+    await comment.updateOne({ comment_content: content });
+    return comment._id;
+  };
 }
 export default CommentService;

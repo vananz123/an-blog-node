@@ -8,7 +8,7 @@ import { userLoginSchema } from '../../schemas/user.schemas'
 
 router.post('/signup',asyncHandler(AccessController.signUp))
 router.post('/login',validateData(userLoginSchema),asyncHandler(AccessController.login))
-
+router.post('/login-google',asyncHandler(AccessController.loginGoogle))
 router.use(authentication)
 router.post('/logout',asyncHandler(AccessController.logout))
 router.post('/refreshToken',asyncHandler(AccessController.refreshToken))

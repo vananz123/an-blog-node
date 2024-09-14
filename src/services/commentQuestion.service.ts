@@ -67,7 +67,7 @@ class CommentQuestionService {
           comment_questionId: convertToObjectIdMongodb(blogId),
           comment_left: { $gt: parentComment.comment_left },
           comment_right: { $lte: parentComment.comment_right },
-        })
+        }).populate({ path: 'comment_userId', select: 'usr_name usr_email _id usr_avatar' })
         .select({
           comment_left: 1,
           comment_right: 1,
@@ -83,7 +83,7 @@ class CommentQuestionService {
       .find({
         comment_questionId: convertToObjectIdMongodb(blogId),
         comment_parentId: parentId,
-      })
+      }).populate({ path: 'comment_userId', select: 'usr_name usr_email _id usr_avatar' })
       .select({
         comment_left: 1,
         comment_right: 1,
@@ -131,8 +131,8 @@ class CommentQuestionService {
     );
     return true
   };
-  static updateComment = async({blogId,content}:{blogId:string;content:string})=>{
-    const comment = await commentQuestionModel.findOne({_id:blogId});
+  static updateComment = async({commentId,content}:{commentId:string;content:string})=>{
+    const comment = await commentQuestionModel.findOne({_id:commentId});
     if (!comment) throw new NotFoundError('not exist comment');
     await comment.updateOne({comment_content:content})
     return comment._id
