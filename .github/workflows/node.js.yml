@@ -25,4 +25,6 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
+    - run: cd /home/ubuntu
+    - run: mv .env actions-runner/_work/an-blog-node/an-blog-node/.env
     - run: pm2 restart an-blog 
