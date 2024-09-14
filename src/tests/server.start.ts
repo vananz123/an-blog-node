@@ -8,7 +8,7 @@ router.get('/status',asyncHandler((req:Request,res:Response,next:NextFunction)=>
     return Ok.create({
         message:"Server start succses",
         metadata:{
-            status:'OK bady!!!'
+            status:'OK bady!!! ffff'
         }
     }).send(res)
 }))
