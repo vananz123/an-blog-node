@@ -11,7 +11,5 @@ router.use(authentication)
 router.get('/posts',asyncHandler(profileController.getAllPosts))
 
 router.post('/follow', asyncHandler(meController.follow)) //userId is follower , userIdFollow is being followed
-
-
 router.post('/blog/bookmark', asyncHandler(meController.bookmarkBlog))
 export default router
