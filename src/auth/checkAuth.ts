@@ -1,12 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
 import { HEADER } from '../constants';
 import { findById } from '../services/apikey.service';
-import { MiddlewaresRequest } from '../core/type.request';
-export const apiKey = async (req: MiddlewaresRequest, res: Response, next: NextFunction) => {
+import { MiddlewaresRequest } from '@/core/type.request';
+import { UserDecode } from './jwtUtils';
+export const apiKey = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // const newApi = await apiKeyModel.create({key:crypto.randomBytes(32).toString('hex'),status:true, permissions:['0000']})
     // console.log(newApi)
     const key = req.headers[HEADER.API_KEY]?.toString();
+    console.log(key);
     if (!key) {
       return res.status(403).json({
         mess: 'Forbidden Error',
@@ -18,7 +20,8 @@ export const apiKey = async (req: MiddlewaresRequest, res: Response, next: NextF
         mess: 'Forbidden Error not found',
       });
     }
-    req.objKey = objKey;
+    Object.assign(req, { objKey: objKey });
+    //req.objKey = objKey;
     return next();
   } catch (error) {
     return res.status(500).json({
@@ -27,13 +30,20 @@ export const apiKey = async (req: MiddlewaresRequest, res: Response, next: NextF
   }
 };
 export const permissions = ({ permissions }: { permissions: string }) => {
-  return (req: MiddlewaresRequest, res: Response, next: NextFunction) => {
-    if (!req.objKey?.permissions) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!('objKey' in req)) return;
+
+    const objKey = req.objKey as object;
+
+    if (!('permissions' in objKey)) return;
+
+    if (!objKey['permissions']) {
       return res.status(403).json({
         mess: 'permissions dinier',
       });
     }
-    const validPermission = req.objKey.permissions.includes(permissions);
+    const objKeypermissions = objKey.permissions as Array<string>
+    const validPermission = objKeypermissions.includes(permissions);
     if (!validPermission) {
       return res.status(403).json({
         mess: 'permissions dinier',

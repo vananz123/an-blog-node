@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import accessService from '../services/access.service';
 import { Created, Ok } from '../core/success.response';
-import { MiddlewaresRequest, UserSignUpRequest, UserLoginRequest } from '../core/type.request';
+import { MiddlewaresRequest, UserSignUpRequest, UserLoginRequest, UserLoginGoogleRequest } from '../core/type.request';
 class AccessController {
   refreshToken = async (req: MiddlewaresRequest, res: Response, next: NextFunction) => {
     return Ok.create({
@@ -19,6 +19,12 @@ class AccessController {
     return Ok.create({
       message: 'new user success',
       metadata: await accessService.login(req.body),
+    }).send(res);
+  };
+  loginGoogle = async (req: Request<any,any,UserLoginGoogleRequest>, res: Response, next: NextFunction) => {
+    return Ok.create({
+      message: 'new user success',
+      metadata: await accessService.loginWithGoogle(req.body.credential),
     }).send(res);
   };
   signUp = async (req: Request<UserSignUpRequest>, res: Response, next: NextFunction) => {

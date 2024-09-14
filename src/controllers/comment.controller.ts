@@ -6,7 +6,7 @@ import CommentQuestionService from '@/services/commentQuestion.service';
 
 class CommentController {
   createComment = async (req: MiddlewaresRequest, res: Response, next: NextFunction) => {
-    if(req.query.type == 'question'){
+    if (req.query.type == 'question') {
       return Ok.create({
         message: 'create comment question success',
         metadata: await CommentQuestionService.createComment(req.body),
@@ -18,7 +18,7 @@ class CommentController {
     }).send(res);
   };
   getComment = async (req: Request<any, any, any, GetCommentRequest>, res: Response, next: NextFunction) => {
-    if(req.query.type =="question"){
+    if (req.query.type == 'question') {
       return Ok.create({
         message: 'get comment question success',
         metadata: await CommentQuestionService.getComment(req.query),
@@ -30,19 +30,19 @@ class CommentController {
     }).send(res);
   };
   delComment = async (req: Request<any, any, DeleteCommentRequest, any>, res: Response, next: NextFunction) => {
-    if(req.query.type =='question'){
+    if (req.query.type == 'question') {
       return Ok.create({
         message: 'delete comment success',
-        metadata: await CommentQuestionService.delComment(req.body),
+        metadata: await CommentQuestionService.delComment({ blogId: req.query.blogId, commentId: req.query.commentId }),
       }).send(res);
     }
     return Ok.create({
       message: 'delete comment success',
-      metadata: await CommentService.delComment(req.body),
+      metadata: await CommentService.delComment({ blogId: req.query.blogId, commentId: req.query.commentId }),
     }).send(res);
   };
   updateComment = async (req: Request<any, any, UpdateCommentRequest, any>, res: Response, next: NextFunction) => {
-    if(req.query.type =='question'){
+    if (req.query.type == 'question') {
       return Ok.create({
         message: 'delete comment success',
         metadata: await CommentQuestionService.updateComment(req.body),

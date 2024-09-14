@@ -5,12 +5,13 @@ const router = require('express').Router()
 import { asyncHandler } from '../../helpers/asyncHandler'
 import profileController from '../../controllers/profile.controller'
 import grantAccess from '../../middlewares/rbac'
-
-router.get('/:slug' , asyncHandler(profileController.profileBySlug))
-//admin
-router.get('/view-any', grantAccess('readAny','profile') , asyncHandler(profileController.profiles))
-//user
-router.get('/view-own',grantAccess('readOwn','profile'),asyncHandler(profileController.profile))
-router.patch('/update-own', asyncHandler(profileController.updateProfile))
+import meController from '@/controllers/me.controller'
+router.get('/post/bookmarks',asyncHandler(meController.getAllBookmarkPostForUser))
 router.use(authentication)
+router.get('/posts',asyncHandler(profileController.getAllPosts))
+
+router.post('/follow', asyncHandler(meController.follow)) //userId is follower , userIdFollow is being followed
+
+
+router.post('/blog/bookmark', asyncHandler(meController.bookmarkBlog))
 export default router

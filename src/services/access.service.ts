@@ -8,9 +8,10 @@ import { UserDecode, verifyJWT } from '../auth/jwtUtils';
 import { getIntoData } from '../utils';
 import { AuthFailureError, BadRequestError, ConflictRequestError, ForbiddenError } from '../core/error.response';
 import { findByEmail } from '../models/reponsitory/user.repo';
-import { UserLoginRequest, UserSignUpRequest } from '../core/type.request';
+import { DecodeUserTokenOfGoogle, UserLoginRequest, UserSignUpRequest } from '../core/type.request';
 import { Types } from 'mongoose';
 import { newUser as createUser } from '../models/reponsitory/user.repo';
+import { jwtDecode } from "jwt-decode";
 class AccessService {
   static refreshToken = async ({
     keyStore,
@@ -41,7 +42,7 @@ class AccessService {
       },
     });
     return {
-      user: { userId, email },
+      user: getIntoData({ fileds: ['_id', 'usr_name', 'usr_email', 'usr_avatar'], object: foundUser }),
       tokens,
     };
   };
@@ -50,6 +51,64 @@ class AccessService {
       throw new AuthFailureError('Invalid Requset');
     }
     return await keyTokenService.deleteKeyById(keyStoreId);
+  };
+  static loginWithGoogle = async (credential: string) => {
+    //find user
+    if(!credential) throw new BadRequestError('Invaild credential')
+    const request : DecodeUserTokenOfGoogle = jwtDecode(credential)
+    if(!request) throw new BadRequestError('Invaild credential')
+    const user = await findByEmail({ email: request.email });
+    // //match password
+    if (user) {
+      // const match = bcrypt.compareSync(request.password, user.usr_password);
+      // if (match === false) {
+      //   throw new AuthFailureError('UnAuthrization!');
+      // }
+      //create tokens
+      const privateKey = crypto.randomBytes(64).toString('hex');
+      const publicKey = crypto.randomBytes(64).toString('hex');
+      const { _id } = user;
+      const tokens = await createTokenPiar({ userId: _id, email: request.email }, privateKey, publicKey);
+
+      if (!tokens) {
+        throw new ConflictRequestError('Error: tokens');
+      }
+      await keyTokenService.createKeyToken({
+        userId: user._id,
+        privateKey,
+        publicKey,
+        refreshToken: tokens.refreshToken,
+      });
+      return {
+        user: getIntoData({ fileds: ['_id', 'usr_name', 'usr_email', 'usr_avatar','usr_slug' ], object: user }),
+        tokens,
+      };
+    } else {
+      const password = crypto.randomBytes(8).toString('hex');
+      const passwordHash = await bcrypt.hash(password, 10);
+      const newUser = await createUser({ usr_name: request.name ,usr_avatar:request.picture, usr_email: request.email, usr_password: passwordHash });
+      if (newUser != null) {
+        const privateKey = crypto.randomBytes(64).toString('hex');
+        const publicKey = crypto.randomBytes(64).toString('hex');
+        const tokens = await createTokenPiar({ userId: newUser._id, email:request.email }, privateKey, publicKey);
+        if (!tokens) {
+          throw new ConflictRequestError('Error: tokens');
+        }
+        const publicKeyString = await keyTokenService.createKeyToken({
+          userId: newUser._id,
+          privateKey,
+          publicKey,
+        });
+        if (!publicKeyString) {
+          throw new ConflictRequestError('Error: not create db');
+        }
+        return {
+          user: getIntoData({ fileds: ['_id', 'usr_name', 'usr_email', 'usr_avatar' , 'usr_slug'], object: newUser }),
+          tokens,
+        };
+      }
+      return null
+    }
   };
   static login = async (request: UserLoginRequest) => {
     //find user
@@ -78,7 +137,7 @@ class AccessService {
         refreshToken: tokens.refreshToken,
       });
       return {
-        user: getIntoData({ fileds: ['_id', 'usr_name', 'usr_email'], object: user }),
+        user: getIntoData({ fileds: ['_id', 'usr_name', 'usr_email' , 'usr_avatar' , 'usr_slug'], object: user }),
         tokens,
       };
     } else {
@@ -108,7 +167,7 @@ class AccessService {
         throw new ConflictRequestError('Error: not create db');
       }
       return {
-        user: getIntoData({ fileds: ['_id', 'usr_name', 'usr_email'], object: newUser }),
+        user: getIntoData({ fileds: ['_id', 'usr_name', 'usr_email' , 'usr_avatar' , 'usr_slug'], object: newUser }),
         tokens,
       };
     }
