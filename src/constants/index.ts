@@ -9,6 +9,6 @@ export const HEADER = {
   REFRESHTOKEN:'x-rtoken-id'
 };
 export const COROS_OPTIONS = {
-  origin: ['http://localhost:3000','https://an-blog-lvhl0kryo-vananz123s-projects.vercel.app','https://an-blog-vananz123-vananz123s-projects.vercel.app'],
+  origin: "*",
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
