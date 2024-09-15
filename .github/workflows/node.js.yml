@@ -24,8 +24,14 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - name: Create .env file
+      run: |
+          echo "AWS_BUCKET_ACCESS_KEY=${{ secrets.AWS_BUCKET_ACCESS_KEY }}" >> .env
+          echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}" >> .env
+          echo "AWS_BUCKET_PRIVATE_KEY=${{ secrets.AWS_BUCKET_PRIVATE_KEY }}" >> .env
+          echo "AWS_BUCKET_PUBLIC_KEY_ID=${{ secrets.AWS_BUCKET_PUBLIC_KEY_ID }}" >> .env
+          echo "AWS_BUCKET_SECRET_KEY=${{ secrets.AWS_BUCKET_SECRET_KEY }}" >> .env
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
     - run: npm ci
-    - run: cd
-    - run: cd /home/ubuntu
-    - run: mv .env actions-runner/_work/an-blog-node/an-blog-node/.env
     - run: pm2 restart an-blog 
