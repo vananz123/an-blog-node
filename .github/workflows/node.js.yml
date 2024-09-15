@@ -26,6 +26,7 @@ jobs:
         cache: 'npm'
     - name: Create .env file
       run: |
+          echo "PORT=${{ secrets.PORT }}" >> .env
           echo "AWS_BUCKET_ACCESS_KEY=${{ secrets.AWS_BUCKET_ACCESS_KEY }}" >> .env
           echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}" >> .env
           echo "AWS_BUCKET_PRIVATE_KEY=${{ secrets.AWS_BUCKET_PRIVATE_KEY }}" >> .env
