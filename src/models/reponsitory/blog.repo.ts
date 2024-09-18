@@ -3,6 +3,7 @@ import blogModel from '../blog.model';
 import { Types } from 'mongoose';
 import { convertToObjectIdMongodb } from '@/utils';
 import { BlogRequest } from '@/core/type.request';
+import Pagination from '@/core/pagination';
 
 export const newBlog = async ({ blog_userId, blog_title, blog_body, blog_thumb, blog_tag = [] }: BlogRequest) => {
   return blogModel.create({
@@ -30,22 +31,20 @@ export const findBlogByQuery = async ({
   offset?: number;
   select?: any;
 }) => {
-  if (search == null || search || search == '') {
-    const blog = await blogModel
+  if (search == null || search== undefined || search == '') {
+    const blog = blogModel
       .find()
       .populate({ path: 'blog_userId', select: 'usr_name usr_email _id usr_avatar usr_slug' })
       .select({ ...select })
-      .limit(limit)
-      .lean();
-    return blog;
+      const paginate = new Pagination<any>({ query: blog }).paginateByQuery({ limit: limit, offset: offset });
+      return paginate;
   }
-  const blog = await blogModel
-    .find({ blog_title: search })
+  const blog = blogModel
+    .find({ blog_title:  { $regex: search } })
     .populate({ path: 'blog_userId', select: 'usr_name usr_email _id usr_avatar usr_slug' })
     .select({ ...select })
-    .limit(limit)
-    .lean();
-  return blog;
+    const paginate = new Pagination<any>({ query: blog }).paginateByQuery({ limit: limit, offset: offset });
+    return paginate;
 };
 export const findBlogBySlug = async ({ slug }: { slug: string | undefined; select?: any }) => {
   const blog = await blogModel
@@ -68,13 +67,12 @@ export const findAllBlogByUserId = async ({
   select?: any;
 }) => {
   const userIdParse = typeof userId == 'string' ? convertToObjectIdMongodb(userId) : userId;
-  const blog = await blogModel
+  const blog = blogModel
     .find({ blog_userId: userIdParse })
     .select({ ...select })
-    .limit(limit)
     .sort({
-      created_at:1
-    })
-    .lean();
-  return blog;
+      created_at: -1,
+    });
+  const paginate = new Pagination<any>({ query: blog }).paginateByQuery({ limit: limit, offset: offset });
+  return paginate;
 };

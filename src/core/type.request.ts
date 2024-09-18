@@ -36,10 +36,20 @@ export interface PagingType {
 export interface GetAllBlogByUserIdRequest extends PagingType {
   userId: string;
 }
+export interface GetAllBlogByUserSlugRequest extends PagingType {
+  slug: string;
+  postType?:string;
+}
 export interface GetAllPostBookmarksByUserIdRequest extends PagingType {
   userId: string;
   postType?:string;
 }
+export interface GetAllAuthorsRequest extends PagingType{
+  search?:string;
+  userId?: string;
+  outstanding?:boolean;
+}
+
 export interface GetQuestionRequest {
   search?: string;
   limit?: number;
@@ -78,7 +88,7 @@ export interface UpdateBlogRequest {
   };
 }
 export type BlogRequest = { blog_userId: string; blog_title: string; blog_body: string; blog_thumb?: string ;blog_tag?:string[]};
-export interface GetBlogQuery {
+export interface GetBlogQuery extends PagingType {
   search: string | undefined;
 }
 interface SwitchControllerQuery {

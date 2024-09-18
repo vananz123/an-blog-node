@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { InferSchemaType, Schema, model } from 'mongoose';
 const DOCUMENT_NAME = 'User';
 const COLLECTION_NAME = 'Users';
 
@@ -32,3 +32,4 @@ const userSchema = new Schema(
 
 //Export the model
 export default model(DOCUMENT_NAME, userSchema);
+export type UserModel = InferSchemaType<typeof userSchema>

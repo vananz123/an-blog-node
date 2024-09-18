@@ -6,7 +6,10 @@ import { asyncHandler } from '../../helpers/asyncHandler'
 import profileController from '../../controllers/profile.controller'
 import grantAccess from '../../middlewares/rbac'
 
+
+
 router.get('/:slug' , asyncHandler(profileController.profileBySlug))
+router.get('/:slug/posts' , asyncHandler(profileController.getAllPostsByUserSlug))
 //admin
 router.get('/view-any', grantAccess('readAny','profile') , asyncHandler(profileController.profiles))
 //user
