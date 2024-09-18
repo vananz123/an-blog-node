@@ -1,10 +1,10 @@
-import { GetAllBlogByUserIdRequest, GetAllBlogByUserSlugRequest, GetAllPostBookmarksByUserIdRequest, UpdateProfileRequest } from '@/core/type.request';
+import {  GetAllBlogByUserSlugRequest, UpdateProfileRequest } from '@/core/type.request';
 import { Ok } from '../core/success.response';
 import { NextFunction, Request, Response } from 'express';
 import UserService from '@/services/user.service'
 const usertest = [
   {
-    name: 'sdfdsf',
+    name: '',
   },
   {
     name: 'sdfdsf111',
