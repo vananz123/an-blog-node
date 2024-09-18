@@ -5,11 +5,8 @@ import { findBlogByQuery, findBlogBySlug, newBlog, findAllBlogByUserId } from '.
 import { convertToObjectIdMongodb, removeUnderfinedObject, updateNestedObjectParser } from '@/utils';
 import blogModel from '@/models/blog.model';
 import slugify from 'slugify';
-import commentController from '@/controllers/comment.controller';
 import commentModel from '@/models/comment.model';
 import userModel from '@/models/user.model';
-import questionModel from '@/models/question.model';
-import { Types } from 'mongoose';
 class BlogService {
   static createBlog = async ({ payload }: CreateBlogRequest) => {
     const user = await findById(payload.blog_userId);
@@ -17,14 +14,16 @@ class BlogService {
     const blog = await newBlog({ ...payload });
     return blog;
   };
-  static getAllBlog = async ({ search }: GetBlogQuery) => {
-    const blog = await findBlogByQuery({ search: search });
+  static getAllBlog = async ({ search , limit=10,offset=1 }: GetBlogQuery) => {
+    console.log(search)
+    const blog = await findBlogByQuery({ search: search , limit:limit, offset:offset });
     return blog;
   };
   static getBlogBySlug = async ({ slug, userId }: { slug: string; userId?: string }) => {
     const blog = await findBlogBySlug({ slug: slug });
     if(!blog) return null
     let bookmartCheck = false
+    let bookmarkCount = 0;
     let heartCheck = false
     if(userId){
       const user = await userModel.findById(userId).lean()
@@ -44,7 +43,7 @@ class BlogService {
     const comment = (await commentModel.find({ comment_blogId: blog?._id }).lean()).length;
     return {
       ...blog,
-      blog_heart:blog.blog_heart.length,
+      blog_heart_count:blog.blog_heart.length,
       blog_heart_check:heartCheck,
       blog_bookmark_check:bookmartCheck,
       blog_comment: comment,

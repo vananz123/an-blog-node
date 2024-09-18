@@ -8,6 +8,7 @@ import blog from './blog'
 import question from './question'
 import comment from './comment'
 import upload from './upload'
+import author from './author'
 import me from './me'
 import { apiKey, permissions } from "@/auth/checkAuth"
 const router = express.Router()
@@ -16,6 +17,7 @@ router.use(apiKey)
 router.use(permissions({permissions:'0000'}))
 router.use('/v1/api/user',access)
 router.use('/v1/api/profile',profile)
+router.use('/v1/api/author',author)
 router.use('/v1/api/me',me)
 router.use('/v1/api/rbac',rbac)
 router.use('/v1/api/comment',comment)

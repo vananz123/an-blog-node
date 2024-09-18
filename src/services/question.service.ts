@@ -44,7 +44,7 @@ class QuestionService {
     if (!question) throw new NotFoundError('not exits question');
     return question;
   };
-  static getAllQuestion = async ({ search, limit = 30, offset = 0 }: GetQuestionRequest) => {
+  static getAllQuestion = async ({ search, limit = 10, offset = 0 }: GetQuestionRequest) => {
     const question = await findQuestionByQuery({search,limit,offset});
     return question;
   };

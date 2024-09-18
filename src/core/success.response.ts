@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import HttpCode from './http.statusCode';
+import { Document } from 'mongoose';
 class SuccessResponse {
   message?: string;
   status: number;
@@ -36,7 +37,6 @@ class Ok extends SuccessResponse {
     return new Ok({ message, metadata });
   }
 }
-
 class Created extends SuccessResponse {
   options: Object;
   constructor({ message, metadata, options = {} }: { message: string; metadata: Object | null | undefined | unknown; options?: Object }) {

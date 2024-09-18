@@ -34,7 +34,7 @@ class BlogController {
   getAllBlog = async (req: Request<any, any, any, GetBlogQuery>, res: Response, next: NextFunction) => {
     return Ok.create({
       message: 'get blog success',
-      metadata: await BlogService.getAllBlog(req.query),
+      metadata: await BlogService.getAllBlog({search:req.query.search, limit:req.query.limit, offset:req.query.offset}),
     }).send(res);
   };
   getBlogBySlug = async (req: Request<BlogParam, any, any, { userId?: string }>, res: Response, next: NextFunction) => {

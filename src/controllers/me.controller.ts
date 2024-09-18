@@ -35,6 +35,18 @@ class MeController {
       metadata: await UserService.unBookmarkQuestion(req.body),
     }).send(res);
   };
+  getAllPosts = async (req: Request<any,any,any,GetAllPostBookmarksByUserIdRequest>, res: Response, next: NextFunction) => {
+    if(req.query.postType && req.query.postType == "question"){
+      return Ok.create({
+        message: 'get questions success',
+        metadata: await UserService.getAllQuestion({...req.query}),
+      }).send(res);
+    }
+    return Ok.create({
+      message: 'get blogs success',
+      metadata: await UserService.getAllBlog({...req.query}),
+    }).send(res);
+  };
   getAllBookmarkPostForUser = async(req: Request<any, any, any, GetAllPostBookmarksByUserIdRequest>, res: Response, next: NextFunction)=>{
     if(req.query.postType && req.query.postType =="question"){
       return Ok.create({

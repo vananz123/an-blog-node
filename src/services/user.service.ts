@@ -1,13 +1,19 @@
 import { NotFoundError } from '@/core/error.response';
-import { DeleteBlogRequest, GetAllBlogByUserIdRequest, GetAllPostBookmarksByUserIdRequest, UpdateProfileRequest } from '@/core/type.request';
+import Pagination from '@/core/pagination';
+import {
+  DeleteBlogRequest,
+  GetAllAuthorsRequest,
+  GetAllBlogByUserIdRequest,
+  GetAllBlogByUserSlugRequest,
+  GetAllPostBookmarksByUserIdRequest,
+  UpdateProfileRequest,
+} from '@/core/type.request';
 import blogModel from '@/models/blog.model';
 import questionModel from '@/models/question.model';
 import { findAllBlogByUserId } from '@/models/reponsitory/blog.repo';
 import { findAllQuestionByUserId } from '@/models/reponsitory/question.repo';
-import { findById } from '@/models/reponsitory/user.repo';
-import userModel from '@/models/user.model';
+import userModel, { UserModel } from '@/models/user.model';
 import { convertToObjectIdMongodb, getIntoData, removeUnderfinedObject, updateNestedObjectParser } from '@/utils';
-
 class UserService {
   static bookmarkBlog = async ({ userId, blogId }: DeleteBlogRequest) => {
     const user = await userModel.findById(userId);
@@ -16,9 +22,9 @@ class UserService {
     if (!blog) throw new NotFoundError('not exits user');
 
     const bookmartBlog = user.usr_bookmark_blog.filter((x) => x.toString() !== blogId);
-    if(bookmartBlog.length < user.usr_bookmark_blog.length){
+    if (bookmartBlog.length < user.usr_bookmark_blog.length) {
       const newUser = await user.updateOne({ usr_bookmark_blog: bookmartBlog });
-    return newUser;
+      return newUser;
     }
     const bookmartBlogAdd = [...user.usr_bookmark_blog, blog._id];
     const newUser = await user.updateOne({ usr_bookmark_blog: bookmartBlogAdd });
@@ -47,7 +53,7 @@ class UserService {
     if (!user) throw new NotFoundError('not exits user');
     const userFollow = await userModel.findById(userIdFollow);
     if (!userFollow) throw new NotFoundError('not exits user');
-    
+
     const newFollower = userFollow.usr_follower.filter((x) => x.toString() !== userId);
     if (newFollower.length < userFollow.usr_follower.length) {
       await userFollow.updateOne({ usr_follower: newFollower });
@@ -64,17 +70,29 @@ class UserService {
   static getAllBlog = async ({ userId, limit = 10, offset = 1 }: GetAllBlogByUserIdRequest) => {
     // const user = await findById(userId);
     // if (!user) throw new NotFoundError('not exits user');
-    const blog = await findAllBlogByUserId({ userId: userId });
+    const blog = await findAllBlogByUserId({ userId: userId, limit: limit, offset: offset });
     return blog;
   };
   static getAllQuestion = async ({ userId, limit = 10, offset = 1 }: GetAllBlogByUserIdRequest) => {
     // const user = await findById(userId);
     // console.log(user)
     // if (!user) throw new NotFoundError('not exits user');
-    const question = await findAllQuestionByUserId({ userId: userId });
+    const question = await findAllQuestionByUserId({ userId: userId, limit: limit, offset: offset });
     return question;
   };
-
+  static getAllBlogBySlug = async ({ slug, limit = 10, offset = 1 }: GetAllBlogByUserSlugRequest) => {
+    const user = await userModel.findOne({usr_slug:slug});
+    if (!user) throw new NotFoundError('not exits user');
+    const blog = await findAllBlogByUserId({ userId: user._id, limit: limit, offset: offset });
+    return blog;
+  };
+  static getAllQuestionBySlug = async ({ slug, limit = 10, offset = 1 }: GetAllBlogByUserSlugRequest) => {
+    const user = await userModel.findOne({usr_slug:slug});
+    console.log(user)
+    if (!user) throw new NotFoundError('not exits user');
+    const question = await findAllQuestionByUserId({ userId: user._id, limit: limit, offset: offset });
+    return question;
+  };
   static getAllBlogBookmark = async ({ userId, limit = 10, offset = 1 }: GetAllPostBookmarksByUserIdRequest) => {
     const user = await userModel.findById(userId).populate({
       path: 'usr_bookmark_blog',
@@ -83,7 +101,8 @@ class UserService {
     });
     if (!user) throw new NotFoundError('not exits user');
     const blog = user.usr_bookmark_blog;
-    return blog;
+    const paginate = new Pagination<any>({ data: blog }).paginateByData({ limit: limit, offset: offset });
+    return paginate;
   };
   static getAllQuestionBookmark = async ({ userId, limit = 10, offset = 1 }: GetAllPostBookmarksByUserIdRequest) => {
     const user = await userModel.findById(userId).populate({
@@ -95,7 +114,7 @@ class UserService {
     const question = user.usr_bookmark_question;
     return question;
   };
-  static updateProfile = async ({userId,payload}:UpdateProfileRequest)=> {
+  static updateProfile = async ({ userId, payload }: UpdateProfileRequest) => {
     const user = await userModel.findById(userId);
     if (!user) throw new NotFoundError('not exits user');
     const cleanPayload = removeUnderfinedObject(payload);
@@ -103,7 +122,7 @@ class UserService {
     const payloadParser = updateNestedObjectParser(cleanPayload);
     const newUser = user.updateOne(payloadParser);
     return newUser;
-  }
+  };
   static profileBySlug = async (slug: string, userId?: string) => {
     const user = await userModel.findOne({ usr_slug: slug }).lean();
     if (!user) throw new NotFoundError('not exits user');
@@ -123,6 +142,24 @@ class UserService {
       fileds: ['_id', 'usr_name', 'usr_slug', 'usr_email', 'usr_avatar', 'usr_follower_count', 'usr_following_count', 'usr_follower_check'],
       object: newUser,
     });
+  };
+  static authors = async ({ userId, search, outstanding = false, limit = 10, offset = 1 }: GetAllAuthorsRequest) => {
+    if (outstanding == true) limit = 3;
+    const authors = userModel.find();
+    if (search != undefined && search != '') {
+      authors.find({ usr_name: { $regex: search } });
+    }
+    authors.select({
+      _id: 1,
+      usr_name: 1,
+      usr_slug: 1,
+      usr_email: 1,
+      usr_avatar: 1,
+      usr_follower_count: { $size: '$usr_follower' },
+      usr_following_count: { $size: '$usr_following' },
+    });
+    const paginate = new Pagination<any>({ query: authors }).paginateByQuery({ limit: limit, offset: offset });
+    return paginate;
   };
 }
 export default UserService;
