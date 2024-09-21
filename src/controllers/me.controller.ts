@@ -28,13 +28,6 @@ class MeController {
       metadata: await UserService.bookmarkQuestion(req.body),
     }).send(res);
   };
-  unBookmarkQuestion = async (req: Request<any, any, { userId: string; questionId: string }, any>, res: Response, next: NextFunction) => {
-    console.log(req.params);
-    return Ok.create({
-      message: 'un bookmart question success',
-      metadata: await UserService.unBookmarkQuestion(req.body),
-    }).send(res);
-  };
   getAllPosts = async (req: Request<any,any,any,GetAllPostBookmarksByUserIdRequest>, res: Response, next: NextFunction) => {
     if(req.query.postType && req.query.postType == "question"){
       return Ok.create({

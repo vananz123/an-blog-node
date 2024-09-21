@@ -11,4 +11,5 @@ router.get('/posts',asyncHandler(meController.getAllPosts))
 
 router.post('/follow', asyncHandler(meController.follow)) //userId is follower , userIdFollow is being followed
 router.post('/blog/bookmark', asyncHandler(meController.bookmarkBlog))
+router.post('/question/bookmark', asyncHandler(meController.bookmarkQuestion))
 export default router

@@ -21,6 +21,13 @@ const commentQuestionSchema = new Schema(
     collection: COLLECTION_NAME,
   },
 );
-
+commentQuestionSchema.virtual('comment_replies',{
+  ref: DOCUMENT_NAME, 
+  localField: '_id',
+  foreignField: 'comment_parentId', 
+  justOne: false,
+})
+commentQuestionSchema.set('toJSON', { virtuals: true });
+commentQuestionSchema.set('toObject', { virtuals: true });
 //Export the model
 export default model(DOCUMENT_NAME, commentQuestionSchema);

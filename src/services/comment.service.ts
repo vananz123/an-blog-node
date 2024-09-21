@@ -4,6 +4,7 @@ import { NotFoundError } from '../core/error.response';
 import { CommentCreateResquest, DeleteCommentRequest, GetCommentRequest } from '../core/type.request';
 import { findBlogById } from '../models/reponsitory/blog.repo';
 import { findCommentById } from '../models/reponsitory/comment.repo';
+import { forEach } from 'lodash';
 
 class CommentService {
   static createComment = async ({ blogId, userId, content, parentId = null }: CommentCreateResquest) => {
@@ -64,17 +65,21 @@ class CommentService {
           comment_left: { $gt: parentComment.comment_left },
           comment_right: { $lte: parentComment.comment_right },
         })
-        .populate({ path: 'comment_userId', select: 'usr_name usr_email _id usr_avatar' })
+        .populate({ path: 'comment_userId', select: 'usr_name usr_email _id usr_avatar usr_slug' })
+        .populate({ path: 'comment_parentId' })
         .select({
+          _id:1,
           comment_userId: 1,
           comment_left: 1,
           comment_right: 1,
           comment_content: 1,
           comment_parentId: 1,
+          created_at:1,
         })
         .sort({
           comment_left: 1,
         });
+
       return comments;
     }
     const comments = await commentModel
@@ -82,12 +87,16 @@ class CommentService {
         comment_blogId: convertToObjectIdMongodb(blogId),
         comment_parentId: parentId,
       })
-      .populate({ path: 'comment_userId', select: 'usr_name usr_email _id usr_avatar' })
+      .populate('comment_replies')
+      .populate({ path: 'comment_userId', select: 'usr_name usr_email _id usr_avatar usr_slug' })
       .select({
+        _id:1,
         comment_left: 1,
         comment_right: 1,
         comment_content: 1,
         comment_parentId: 1,
+        comment_replies:1,
+        created_at:1,
       })
       .sort({
         comment_left: 1,

@@ -4,6 +4,7 @@ import { convertToObjectIdMongodb, nameFileRamdom } from '@/utils';
 import slugify from 'slugify';
 import { Types } from 'mongoose';
 import Pagination from '@/core/pagination';
+import { SELECT_TIMESTAMPS } from '@/constants';
 
 export const newQuestion = async ({
   question_userId,
@@ -27,46 +28,61 @@ export const newQuestion = async ({
 export const findQuestionById = async (questionId: string, select?: any) => {
   return await questionModel.findById(questionId).lean();
 };
+const selectDefault = {
+  _id: 1,
+  question_title: 1,
+  question_tag: 1,
+  question_slug: 1,
+  question_reader: 1,
+  question_heart_count: { $size: '$question_heart' },
+};
+export type SortQuestion = 'outstanding' | 'latest' | 'oldest';
 export const findQuestionByQuery = async ({
   search,
+  tag,
   limit = 10,
   offset = 1,
-  select = {
-    question_content: 0,
-  },
+  select = selectDefault,
+  sort = 'outstanding',
 }: {
   search?: string;
+  tag?: string;
   limit: number;
   offset: number;
   select?: any;
+  sort?: SortQuestion;
 }) => {
-  if (search == null || search==undefined || search == '') {
-    const question = questionModel
-      .find()
-      .populate({ path: 'question_userId', select: 'usr_name usr_email _id usr_slug usr_avatar' })
-      .sort({
-        create_at:-1
-      })
-      .select({ ...select });
-
-    const paginate = new Pagination<any>({ query: question }).paginateByQuery({ limit: limit, offset: offset });
-    return paginate;
+  const question = questionModel.find();
+  if (search != null && search != undefined && search != '') {
+    question.find({ question_title: { $regex: search } });
   }
-  const q = questionModel
-    .find({ question_title:{$regex:search}  })
-    .populate({ path: 'question_userId', select: 'usr_name usr_email _id usr_slug usr_avatar' })
-    .sort({
-      create_at:-1
-    })
-    .select({ ...select });
-  const paginate = new Pagination<any>({ query: q }).paginateByQuery({ limit: limit, offset: offset });
+  if (tag != null && tag != undefined && tag != '') {
+    question.find({ question_tag: tag });
+  }
+  question.populate({ path: 'question_userId', select: 'usr_name usr_email _id usr_slug usr_avatar' }).select({ ...select, ...SELECT_TIMESTAMPS });
+  switch (sort) {
+    case 'outstanding':
+      question.sort({
+        question_reader: -1,
+      });
+    case 'latest':
+      question.sort({
+        create_at: -1,
+      });
+    case 'oldest':
+      question.sort({
+        create_at: 1,
+      });
+  }
+
+  const paginate = new Pagination<any>({ query: question }).paginateByQuery({ limit: limit, offset: offset });
   return paginate;
 };
 
 export const findQuestionBySlug = async ({ slug }: { slug: string | undefined; select?: any }) => {
   const blog = await questionModel
     .findOne({ question_slug: slug })
-    .populate({ path: 'question_userId', select: 'usr_name usr_email _id usr_avatar' })
+    .populate({ path: 'question_userId', select: 'usr_name usr_email _id usr_avatar usr_slug' })
     .lean();
   return blog;
 };
@@ -74,9 +90,7 @@ export const findAllQuestionByUserId = async ({
   userId,
   limit = 10,
   offset = 1,
-  select = {
-    question_content: 0,
-  },
+  select = selectDefault,
 }: {
   userId: string | Types.ObjectId;
   limit?: number;
@@ -84,7 +98,7 @@ export const findAllQuestionByUserId = async ({
   select?: any;
 }) => {
   const userIdParse = typeof userId == 'string' ? convertToObjectIdMongodb(userId) : userId;
-  const question = questionModel.find({ question_userId: userIdParse }).select({ ...select });
+  const question = questionModel.find({ question_userId: userIdParse }).select({ ...select, ...SELECT_TIMESTAMPS });
   const paginate = new Pagination<any>({ query: question }).paginateByQuery({ limit: limit, offset: offset });
   return paginate;
 };

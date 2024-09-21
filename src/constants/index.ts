@@ -12,3 +12,7 @@ export const COROS_OPTIONS = {
   origin: "*",
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
+export const SELECT_TIMESTAMPS ={
+  created_at:1,
+  updated_at:1
+}
