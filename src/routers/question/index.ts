@@ -12,4 +12,5 @@ router.post('', validateData(questionCreateSchema), asyncHandler(questionControl
 router.get('/get-by-id/:id', asyncHandler(questionController.getQuestionById))
 router.patch('', asyncHandler(questionController.updateQuestion))
 router.delete('', asyncHandler(questionController.deleteQuestion))
+router.post('/heart', asyncHandler(questionController.heartQuestion))
 export default router

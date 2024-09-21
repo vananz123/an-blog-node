@@ -14,9 +14,9 @@ class BlogService {
     const blog = await newBlog({ ...payload });
     return blog;
   };
-  static getAllBlog = async ({ search , limit=10,offset=1 }: GetBlogQuery) => {
+  static getAllBlog = async ({ tag, search , limit=10,offset=1 }: GetBlogQuery) => {
     console.log(search)
-    const blog = await findBlogByQuery({ search: search , limit:limit, offset:offset });
+    const blog = await findBlogByQuery({ tag:tag, search: search , limit:limit, offset:offset });
     return blog;
   };
   static getBlogBySlug = async ({ slug, userId }: { slug: string; userId?: string }) => {

@@ -21,6 +21,14 @@ const commentSchema = new Schema(
     collection: COLLECTION_NAME,
   },
 );
-
+// create a vitrual field and set became a comment replies as array 
+commentSchema.virtual('comment_replies',{
+  ref: 'Comment', 
+  localField: '_id',
+  foreignField: 'comment_parentId', 
+  justOne: false,
+})
+commentSchema.set('toJSON', { virtuals: true });
+commentSchema.set('toObject', { virtuals: true });
 //Export the model
 export default model(DOCUMENT_NAME, commentSchema);

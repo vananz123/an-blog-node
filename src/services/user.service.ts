@@ -35,17 +35,13 @@ class UserService {
     if (!user) throw new NotFoundError('not exits user');
     const question = await questionModel.findById(questionId);
     if (!question) throw new NotFoundError('not exits user');
-    const bookmartQuestion = [...user.usr_bookmark_question, question._id];
-    const newUser = await user.updateOne({ usr_bookmark_question: bookmartQuestion });
-    return newUser;
-  };
-  static unBookmarkQuestion = async ({ userId, questionId }: { userId: string; questionId: string }) => {
-    const user = await userModel.findById(userId);
-    if (!user) throw new NotFoundError('not exits user');
-    const question = await questionModel.findById(questionId);
-    if (!question) throw new NotFoundError('not exits user');
     const bookmartQuestion = user.usr_bookmark_question.filter((x) => x.toString() !== questionId);
-    const newUser = await user.updateOne({ usr_bookmark_question: bookmartQuestion });
+    if (bookmartQuestion.length < user.usr_bookmark_question.length) {
+      const newUser = await user.updateOne({ usr_bookmark_question: bookmartQuestion });
+      return newUser;
+    }
+    const bookmartQuestionAdd = [...user.usr_bookmark_question, question._id];
+    const newUser = await user.updateOne({ usr_bookmark_question: bookmartQuestionAdd });
     return newUser;
   };
   static follow = async ({ userId, userIdFollow }: { userId: string; userIdFollow: string }) => {

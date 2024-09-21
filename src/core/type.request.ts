@@ -4,6 +4,7 @@ import { Request } from 'express';
 import { z } from 'zod';
 import { commentCreateSchema } from '@/schemas/comment.schemas';
 import { questionCreateSchema } from '@/schemas/question.schema';
+import { SortQuestion } from '@/models/reponsitory/question.repo';
 export type UserLoginGoogleRequest = {
   credential :string
 }
@@ -50,10 +51,10 @@ export interface GetAllAuthorsRequest extends PagingType{
   outstanding?:boolean;
 }
 
-export interface GetQuestionRequest {
+export interface GetQuestionRequest extends PagingType {
   search?: string;
-  limit?: number;
-  offset?: number;
+  tag?:string;
+  sort?:SortQuestion;
 }
 export interface MiddlewaresRequest extends Request {
   objKey?: {
@@ -90,6 +91,8 @@ export interface UpdateBlogRequest {
 export type BlogRequest = { blog_userId: string; blog_title: string; blog_body: string; blog_thumb?: string ;blog_tag?:string[]};
 export interface GetBlogQuery extends PagingType {
   search: string | undefined;
+  tag?:string;
+  sort?:string;
 }
 interface SwitchControllerQuery {
   type: string;
